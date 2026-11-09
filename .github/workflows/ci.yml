@@ -1,0 +1,34 @@
+
+name: Website CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check website file
+        run: |
+          test -f index.html
+          echo "Website file exists!"
+
+      - name: Validate HTML
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          class Parser(HTMLParser):
+              pass
+
+          content = Path("index.html").read_text()
+          Parser().feed(content)
+          print("Basic HTML parsing completed!")
+          PY
